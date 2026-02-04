@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
 
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/course');
@@ -17,6 +19,18 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve);
+app.get('/api-docs', swaggerUi.setup(swaggerSpec, { 
+  swaggerOptions: { 
+    url: '/api-docs.json'
+  }
+}));
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // Routes
 app.use('/api/auth', authRoutes);

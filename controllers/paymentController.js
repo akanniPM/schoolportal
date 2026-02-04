@@ -5,6 +5,9 @@ const Payment = require("../models/Payment"); // We'll create this model
 const initializePayment = async (req, res) => {
   const { email, amount } = req.body;
 
+  console.log("Payment request received:", { email, amount });
+  console.log("Paystack key exists:", !!process.env.PAYSTACK_SECRET_KEY);
+
   try {
     const response = await axios.post(
       "https://api.paystack.co/transaction/initialize",
@@ -20,6 +23,7 @@ const initializePayment = async (req, res) => {
     res.status(200).json(response.data);
   } catch (error) {
     console.error("Initialize Error:", error.response?.data || error.message);
+    console.error("Full error:", error);
     res.status(500).json({ message: "Error initializing payment." });
   }
 };

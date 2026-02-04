@@ -1,0 +1,283 @@
+{
+  "info": {
+    "_postman_id": "schoolportal-api",
+    "name": "School Portal API",
+    "description": "Complete API collection for School Portal application with student registration, authentication, payments, and course management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Register Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@gmail.com\",\n  \"password\": \"Secret123\",\n  \"level\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/students/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "students", "register"]
+            },
+            "description": "Register a new student account"
+          }
+        },
+        {
+          "name": "Login Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane@gmail.com\",\n  \"password\": \"Secret123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/students/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "students", "login"]
+            },
+            "description": "Login student and receive JWT token"
+          }
+        },
+        {
+          "name": "Get Student Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/students/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "students", "profile"]
+            },
+            "description": "Get authenticated student's profile (requires token)"
+          }
+        },
+        {
+          "name": "Register Courses",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courseIds\": [\"course_id_1\", \"course_id_2\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/students/{{studentId}}/register-courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "students", "{{studentId}}", "register-courses"]
+            },
+            "description": "Register courses for a student"
+          }
+        },
+        {
+          "name": "Get Registered Courses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{studentToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/students/registered-courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "students", "registered-courses"]
+            },
+            "description": "Get all courses registered by authenticated student"
+          }
+        },
+        {
+          "name": "Upload Receipt",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentId",
+                  "value": "STD2025001",
+                  "type": "text"
+                },
+                {
+                  "key": "receipt",
+                  "type": "file",
+                  "src": "path/to/receipt.pdf"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/students/upload-receipt",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "students", "upload-receipt"]
+            },
+            "description": "Upload payment receipt as PDF or image"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Initialize Payment (Paystack)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane@gmail.com\",\n  \"amount\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/pay-tuition",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "pay-tuition"]
+            },
+            "description": "Initialize payment and get Paystack checkout URL"
+          }
+        },
+        {
+          "name": "Verify Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"{{paystackReference}}\",\n  \"amountPaid\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/verify-payment",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "verify-payment"]
+            },
+            "description": "Verify payment with Paystack and update student balance"
+          }
+        },
+        {
+          "name": "Get Student Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/{{studentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "{{studentId}}"]
+            },
+            "description": "Get payment history for a specific student"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "List All Receipts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/receipts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "receipts"]
+            },
+            "description": "List all student payment receipts (admin only)"
+          }
+        },
+        {
+          "name": "Verify Receipt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"STD2025001\",\n  \"status\": \"approved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/verify-receipt",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "verify-receipt"]
+            },
+            "description": "Approve or reject a payment receipt (admin only)"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "studentToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "studentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "paystackReference",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

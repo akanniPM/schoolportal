@@ -16,22 +16,201 @@ const {
 } = require("../controllers/studentController");
 const { verifyPayment } = require("../controllers/paymentController");
 
-// 🧾 REGISTER NEW STUDENT (SIGNUP)
+/**
+ * @swagger
+ * /api/students/register:
+ *   post:
+ *     summary: Register a new student
+ *     tags: [Students]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, email, password, level]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Jane Doe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: jane@gmail.com
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *                 example: Secret123
+ *               level:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 4
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Student registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 studentId:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       400:
+ *         description: Email already registered or validation error
+ *       500:
+ *         description: Server error
+ */
 router.post("/register", validateStudentSignup, registerStudent);
 
-// 🔑 LOGIN
+/**
+ * @swagger
+ * /api/students/login:
+ *   post:
+ *     summary: Login a student
+ *     tags: [Students]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: jane@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: Secret123
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *                 student:
+ *                   $ref: '#/components/schemas/Student'
+ *       404:
+ *         description: Student not found
+ *       400:
+ *         description: Invalid credentials
+ */
 router.post("/login", loginStudent);
 
-// 👤 FETCH PROFILE (protected)
+/**
+ * @swagger
+ * /api/students/profile:
+ *   get:
+ *     summary: Get student profile
+ *     tags: [Students]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Student profile retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Student'
+ *       401:
+ *         description: Unauthorized or invalid token
+ *       404:
+ *         description: Student not found
+ */
 router.get("/profile", authMiddleware, getStudentProfile);
 
-// 🎓 REGISTER COURSES
+/**
+ * @swagger
+ * /api/students/{id}/register-courses:
+ *   post:
+ *     summary: Register courses for a student
+ *     tags: [Students]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               courseIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Courses registered successfully
+ *       404:
+ *         description: Student not found
+ */
 router.post("/:id/register-courses", registerCourses);
 
-// 📚 GET REGISTERED COURSES
+/**
+ * @swagger
+ * /api/students/registered-courses:
+ *   get:
+ *     summary: Get student's registered courses
+ *     tags: [Students]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Registered courses retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Course'
+ *       401:
+ *         description: Unauthorized
+ */
 router.get("/registered-courses", authMiddleware, getRegisteredCourses);
 
-// 💳 VERIFY PAYMENT (Paystack)
+/**
+ * @swagger
+ * /api/students/verify-payment:
+ *   post:
+ *     summary: Verify Paystack payment
+ *     tags: [Students]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [reference, amountPaid]
+ *             properties:
+ *               reference:
+ *                 type: string
+ *                 example: "paystack_ref_123"
+ *               amountPaid:
+ *                 type: number
+ *                 example: 5000
+ *     responses:
+ *       200:
+ *         description: Payment verified successfully
+ *       400:
+ *         description: Payment verification failed
+ */
 router.post("/verify-payment", verifyPayment);
 
 // 📤 UPLOAD RECEIPT (saves to Cloudinary when configured, otherwise keeps local path)
