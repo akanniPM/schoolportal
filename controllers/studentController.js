@@ -1,6 +1,7 @@
 const Student = require("../models/Student");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const { generateStudentId } = require("../utils/generateStudentId");
 
 // 🔐 Generate JWT token
 const generateToken = (student) => {
@@ -9,12 +10,6 @@ const generateToken = (student) => {
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
-};
-
-// 🧩 Helper: Generate unique Student ID
-const generateStudentId = () => {
-  const randomNum = Math.floor(100000 + Math.random() * 900000);
-  return `STD${randomNum}`;
 };
 
 // 🧾 REGISTER / SIGNUP
@@ -32,7 +27,7 @@ const registerStudent = async (req, res) => {
     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
     // Generate studentId
-    const studentId = generateStudentId();
+    const studentId = await generateStudentId();
 
     const newStudent = new Student({
       name,
@@ -95,7 +90,7 @@ const loginStudent = async (req, res) => {
 // 👤 GET STUDENT PROFILE
 const getStudentProfile = async (req, res) => {
   try {
-    const student = await Student.findById(req.student.id).select("-password");
+    const student = await Student.findById(req.user.id).select("-password");
     if (!student) return res.status(404).json({ message: "Student not found" });
 
     res.status(200).json(student);
@@ -123,7 +118,7 @@ const registerCourses = async (req, res) => {
 // 📚 GET REGISTERED COURSES
 const getRegisteredCourses = async (req, res) => {
   try {
-    const student = await Student.findById(req.student.id)
+    const student = await Student.findById(req.user.id)
       .populate("registeredCourses");
     if (!student)
       return res.status(404).json({ message: "Student not found" });

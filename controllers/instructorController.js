@@ -1,7 +1,7 @@
 const Instructor = require('../models/Instructor');
 const bcrypt = require('bcryptjs');
 const isGmail = require('../utils/validateEmail'); // Utility to check if email is a Gmail address
-const Student = require('../models/studentModel');
+const Student = require('../models/Student');
 
 
 const signupInstructor = async (req, res) => {

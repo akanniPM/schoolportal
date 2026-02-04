@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Course = require('../models/Course');
 const coursesController = require('../controllers/courseController');
-// const authenticateAdmin = require('../middleware/authenticateInstructor');
+const { validateCourseInput } = require('../middleware/validateInput');
 
 // Get all courses
 router.get('/', async (req, res) => {
@@ -29,12 +29,12 @@ router.get('/:level', async (req, res) => {
   }
 });
 
-// Create new course
-router.post('/', coursesController.createCourse);
+// Create new course (with validation)
+router.post('/', validateCourseInput, coursesController.createCourse);
 
 
 // Update course
-router.put('/:id', async (req, res) => {
+router.put('/:id', validateCourseInput, async (req, res) => {
   try {
     const { title, description, level } = req.body;
     const updated = await Course.findByIdAndUpdate(req.params.id, { title, description, level }, { new: true });

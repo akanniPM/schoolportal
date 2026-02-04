@@ -5,6 +5,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/course');
 const payment = require('./routes/paymentRoutes');
+const tuitionRoutes = require('./routes/tuitionRoutes');
 const adminRoutes = require('./routes/admin');
 const instructorAuthRoutes = require('./routes/instructorAuth')
 const instructorAdminRoutes = require('./routes/instructorAdmin');
@@ -18,10 +19,11 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoutes);  // Corrected
+app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/payments', payment);
+app.use('/api/tuition', tuitionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/api/instructor-auth', instructorAuthRoutes);

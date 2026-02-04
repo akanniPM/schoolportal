@@ -2,39 +2,32 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Student = require('../models/Student');
 const sendStudentIdEmail = require('../utils/sendStudentIdEmail');
-
-const generateStudentId = async () => {
-  const count = await Student.countDocuments();
-  return 'STD' + (2025001 + count); // simple increment
-};
+const { generateStudentId } = require('../utils/generateStudentId');
 
 const signup = async (req, res) => {
   try {
-    const { name, email, password, course } = req.body;
+    const { name, email, password, level } = req.body;
     
 
     // Check if the email already exists
-    if (!/^[^@]+@gmail\.com$/i.test(email))  {
-      return res.status(400).json({ error: 'Invalid email format. Please use a Gmail address.' });
-    }
-
     const existingStudent = await Student.findOne({ email });
     if (existingStudent) {
-      return res.status(400).json({ erro: 'Email already exists' });
+      return res.status(400).json({ error: 'Email already exists' });
     }
+    
+    const studentId = await generateStudentId();
     const existingId = await Student.findOne({ studentId });
     if (existingId) {
-      return res.statu(400).json({error: 'Student Id already exists'});
+      return res.status(400).json({error: 'Student Id already exists. Please try again.'});
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const studentId = await generateStudentId();
 
     const student = await Student.create({
       name,
       email,
       password: hashedPassword,
-      course,
       studentId,
+      level: level || 1,
     });
 
     await sendStudentIdEmail(email, studentId);

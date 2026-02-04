@@ -8,10 +8,14 @@ const studentSchema = new mongoose.Schema({
   studentId: { type: String, required: true, unique: true },
   level: { type: Number, required: true },
   courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }], // Track registered courses
-  grade: {String}, // Track overall grade
+  grades: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, grade: String }], // Track grades per course
+  balance: { type: Number, default: 0 }, // Track student balance for payments
   registeredCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }], // Track registered courses
-  receipt: { type: String, required: false }, // Receipt for payment
-  receiptStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending'},
+  receipt: {
+    path: { type: String, required: false },
+    uploadedAt: { type: Date, default: null },
+    status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' }
+  }, // Unified receipt object
   receiptVerified: { type: Boolean, default: false }, // Track if receipt is verified
 });
 

@@ -65,7 +65,7 @@ router.post('/pay-tuition', verifyToken, async (req, res) => {
 });
 
 // Get all pending receipts
-router.get('/receipts', async (req, res) => {
+router.get('/receipts', verifyToken, isAdmin, async (req, res) => {
   try {
     const receipts = await Student.find({ 'receipt.path': { $exists: true } });
     res.status(200).json(receipts);
@@ -75,7 +75,7 @@ router.get('/receipts', async (req, res) => {
 });
 
 // Approve or reject a receipt
-router.post('/verify-receipt', async (req, res) => {
+router.post('/verify-receipt', verifyToken, isAdmin, async (req, res) => {
   try {
     const { studentId, status } = req.body;
     if (!['approved', 'rejected'].includes(status)) {
@@ -121,7 +121,7 @@ router.post('/verify-receipt', async (req, res) => {
 //     res.status(500).json({ error: 'Failed to generate credentials' });
 //   }
 // });
-router.post('/students/:id/generate-credentials', async (req, res) => {
+router.post('/students/:id/generate-credentials', verifyToken, isAdmin, async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
     if (!student) return res.status(404).json({ error: 'Student not found' });
@@ -151,8 +151,7 @@ router.post('/students/:id/generate-credentials', async (req, res) => {
 
 
 // POST /api/admin/generate-user
-// admin.j
-router.post('/generate-user', async (req, res) => {
+router.post('/generate-user', verifyToken, isAdmin, async (req, res) => {
   const { name, email, role } = req.body;
 
   if (!name || !email || !role) {
@@ -239,7 +238,7 @@ router.post('/generate-user', async (req, res) => {
 
 
 // GET all instructors
-router.get('/instructors', async (req, res) => {
+router.get('/instructors', verifyToken, isAdmin, async (req, res) => {
   try {
     const instructors = await Instructor.find().sort({ createdAt: -1 });
     res.json(instructors);
@@ -250,7 +249,7 @@ router.get('/instructors', async (req, res) => {
 });
 
 // PUT /api/admin/instructors/:id
-router.put('/instructors/:id', async (req, res) => {
+router.put('/instructors/:id', verifyToken, isAdmin, async (req, res) => {
   try {
     const { name, email } = req.body;
 
@@ -270,7 +269,7 @@ router.put('/instructors/:id', async (req, res) => {
 });
 
 // DELETE /api/admin/instructors/:id
-router.delete('/instructors/:id', async (req, res) => {
+router.delete('/instructors/:id', verifyToken, isAdmin, async (req, res) => {
   try {
     const deleted = await Instructor.findByIdAndDelete(req.params.id);
 
@@ -321,7 +320,7 @@ router.put('/instructors/:id/assign-courses', async (req, res) => {
 });
 
 // DELETE /api/admin/students/:id/credentials
-router.delete('/students/:id/credentials', async (req, res) => {
+router.delete('/students/:id/credentials', verifyToken, isAdmin, async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
     if (!student) return res.status(404).json({ error: 'Student not found' });
