@@ -15,7 +15,10 @@ curl -X POST http://localhost:5000/students/register \
 ```bash
 curl -X POST http://localhost:5000/students/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"jane@example.com","password":"Secret123"}'
+  -d '{
+  "studentId": "STD2025003",
+  "password":"123456"
+}'
 ```
 
 - Get profile (use token from login)

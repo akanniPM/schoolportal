@@ -6,14 +6,13 @@ const mongoose = require('mongoose');
 const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB (non-blocking)
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log('✅ MongoDB connected');
-})
-.catch(err => {
-  console.error('❌ MongoDB connection error:', err.message);
-  console.warn('⚠️  Server starting without database connection. API endpoints may fail.');
-});
+if (process.env.MONGO_URI) {
+  mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('✅ MongoDB connected'))
+    .catch(err => console.error('❌ MongoDB connection error:', err.message));
+} else {
+  console.warn('⚠️  MONGO_URI not set — server will start without DB (endpoints using DB will fail).');
+}
 
 // Start server regardless of DB connection
 app.listen(PORT, () => {
