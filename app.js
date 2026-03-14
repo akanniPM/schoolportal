@@ -17,8 +17,12 @@ const studentRoutes = require('./routes/studentsRoutes');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Frontend engineer's local dev
+  credentials: true
+}));
 app.use(express.json({ limit: "10mb" })); // Increase payload limit for large uploads (e.g., receipts)
+
 
 // Swagger documentation
 app.use('/api-docs', swaggerUi.serve);

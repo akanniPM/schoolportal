@@ -15,7 +15,7 @@ if (process.env.MONGO_URI) {
 }
 
 // Start server regardless of DB connection
-app.listen(PORT, () => {
+app.listen(PORT,  () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📚 API Docs: http://localhost:${PORT}/api-docs`);
 });
