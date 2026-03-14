@@ -19,7 +19,9 @@ const studentSchema = new mongoose.Schema({
   receiptVerified: { type: Boolean, default: false }, // Track if receipt is verified
 });
 
-module.exports = mongoose.model('Student', studentSchema);
+const student = mongoose.model("Student", studentSchema);
+
+module.exports = student;
 
 
 

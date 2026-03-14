@@ -16,57 +16,6 @@ const {
 } = require("../controllers/studentController");
 const { verifyPayment } = require("../controllers/paymentController");
 
-/**
- * @swagger
- * /api/students/register:
- *   post:
- *     summary: Register a new student
- *     tags: [Students]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [name, email, password, level]
- *             properties:
- *               name:
- *                 type: string
- *                 example: Jane Doe
- *               email:
- *                 type: string
- *                 format: email
- *                 example: jane@gmail.com
- *               password:
- *                 type: string
- *                 minLength: 6
- *                 example: Secret123
- *               level:
- *                 type: integer
- *                 minimum: 1
- *                 maximum: 4
- *                 example: 1
- *     responses:
- *       201:
- *         description: Student registered successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 studentId:
- *                   type: string
- *                 name:
- *                   type: string
- *                 email:
- *                   type: string
- *       400:
- *         description: Email already registered or validation error
- *       500:
- *         description: Server error
- */
 router.post("/register", validateStudentSignup, registerStudent);
 
 /**

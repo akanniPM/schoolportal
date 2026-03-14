@@ -29,22 +29,27 @@ const registerStudent = async (req, res) => {
     // Generate studentId
     const studentId = await generateStudentId();
 
-    const newStudent = new Student({
+
+    const student = await Student.create({
       name,
       email,
       level,
       password: hashedPassword,
       studentId,
-    });
+    })
 
-    await newStudent.save();
-
-    res.status(201).json({
+    if (student) {
+      console.log(`this is the created student ${student}`);
+      return res.status(201).json({
       message: "Registration successful",
-      studentId: newStudent.studentId,
-      name: newStudent.name,
-      email: newStudent.email,
+      studentId: student.studentId,
+      name: student.name,
+      email: student.email,
     });
+      
+    }
+
+    
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({ message: "Server error registering student", error: error.message });
