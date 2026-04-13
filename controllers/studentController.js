@@ -66,11 +66,10 @@ const loginStudent = async (req, res) => {
     if (!student) return res.status(404).json({ message: "Student not found" });
 
     // Check password
-    const isMatch = student.password
-      ? await bcrypt.compare(password, student.password)
-      : true;
+    if (!student.password) return res.status(401).json({ message: "Account has no password set. Contact admin." });
 
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    const isMatch = await bcrypt.compare(password, student.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
     // Generate token
     const token = generateToken(student);
@@ -78,13 +77,6 @@ const loginStudent = async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       token,
-      student: {
-        id: student._id,
-        name: student.name,
-        email: student.email,
-        studentId: student.studentId,
-        level: student.level,
-      },
     });
   } catch (error) {
     console.error("Login error:", error);

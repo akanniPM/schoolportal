@@ -7,6 +7,9 @@ const requiredVars = [
   'JWT_SECRET',
   'EMAIL_USER',
   'EMAIL_PASS',
+  'CLOUDNAME',
+  'CLOUDKEY',
+  'CLOUDSECRET',
 ];
 
 const missing = requiredVars.filter((v) => !process.env[v]);

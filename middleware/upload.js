@@ -1,32 +1,20 @@
 // middleware/upload.js
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 
-//Ensure the uploads directory exists
-const uploadDir = path.join(__dirname, '../uploads/receipts/');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Use memory storage — file is kept as a buffer and streamed to Cloudinary
+const storage = multer.memoryStorage();
 
-// Set storage engine
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
-
-// File filter
+// File filter — validate both extension AND MIME type
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|pdf/;
-  const ext = path.extname(file.originalname).toLowerCase();
-  if (allowedTypes.test(ext)) cb(null, true);
-  else cb(new Error('Only images and PDFs are allowed'));
+  const allowedExts = /\.(jpeg|jpg|png|pdf)$/i;
+  const allowedMimes = ['image/jpeg', 'image/png', 'application/pdf'];
+  const extValid = allowedExts.test(path.extname(file.originalname));
+  const mimeValid = allowedMimes.includes(file.mimetype);
+  if (extValid && mimeValid) cb(null, true);
+  else cb(new Error('Only JPEG, PNG, and PDF files are allowed'));
 };
 
-const upload = multer({ storage, fileFilter });
+const upload = multer({ storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB max
 
 module.exports = upload;

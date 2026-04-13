@@ -12,7 +12,7 @@ const { generateUsername, generatePassword } = require('../utils/randomGenerator
 const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 
 // GET all tuition payments
-router.get('/payments', async (req, res) => {
+router.get('/payments', verifyToken, isAdmin, async (req, res) => {
   try {
     const payments = await Payment.find().sort({ createdAt: -1 });
     res.json(payments);
@@ -23,7 +23,7 @@ router.get('/payments', async (req, res) => {
 });
 
 // PATCH: update payment status
-router.patch('/payments/:id/status', async (req, res) => {
+router.patch('/payments/:id/status', verifyToken, isAdmin, async (req, res) => {
   const { status } = req.body;
   if (!['approved', 'rejected'].includes(status)) {
     return res.status(400).json({ error: 'Invalid status value' });
@@ -283,7 +283,7 @@ router.delete('/instructors/:id', verifyToken, isAdmin, async (req, res) => {
 });
 
 // GET all students
-router.get('/students', async (req, res) => {
+router.get('/students', verifyToken, isAdmin, async (req, res) => {
   try {
     const students = await Student.find().sort({ createdAt: -1 });
     res.json(students);
@@ -296,7 +296,7 @@ router.get('/students', async (req, res) => {
 // Inside routes/admin.js
 
 // Assign courses to instructor
-router.put('/instructors/:id/assign-courses', async (req, res) => {
+router.put('/instructors/:id/assign-courses', verifyToken, isAdmin, async (req, res) => {
   const { courseIds } = req.body;
 
   if (!Array.isArray(courseIds)) {

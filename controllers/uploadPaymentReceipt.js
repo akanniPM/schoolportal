@@ -1,8 +1,8 @@
 const Student = require('../models/Student');
 const Payment = require('../models/Payment');
+const { uploadToCloudinary } = require('../config/cloudinary');
 
-// Upload payment receipt (already uploaded via Multer in route)
-// This controller handles the receipt upload and validation
+// Upload payment receipt — streams buffer to Cloudinary, stores secure URL
 const uploadPaymentReceipt = async (req, res) => {
   try {
     const { studentId } = req.body;
@@ -20,22 +20,29 @@ const uploadPaymentReceipt = async (req, res) => {
       return res.status(404).json({ error: 'Student not found' });
     }
 
-    // Store receipt as object with file path, upload timestamp, and status
+    // Determine resource type for Cloudinary (PDF vs image)
+    const resourceType = req.file.mimetype === 'application/pdf' ? 'raw' : 'image';
+
+    const cloudinaryResult = await uploadToCloudinary(req.file.buffer, {
+      resource_type: resourceType,
+      public_id: `receipt_${studentId}_${Date.now()}`,
+    });
+
+    // Store Cloudinary secure URL instead of a local path
     student.receipt = {
-      path: req.file.path,
+      path: cloudinaryResult.secure_url,
       uploadedAt: new Date(),
-      status: 'pending'
+      status: 'pending',
     };
     await student.save();
 
     res.status(201).json({
       message: 'Payment receipt uploaded successfully!',
       receipt: {
-        path: req.file.path,
-        fileName: req.file.filename,
+        url: cloudinaryResult.secure_url,
         uploadedAt: student.receipt.uploadedAt,
-        status: 'pending'
-      }
+        status: 'pending',
+      },
     });
   } catch (err) {
     console.error('Error uploading payment receipt:', err);

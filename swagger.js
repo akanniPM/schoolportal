@@ -22,7 +22,7 @@ const options = {
         description: 'Development server'
       },
       {
-        url: 'https://your-app.onrender.com',
+        url: process.env.PRODUCTION_URL || 'https://your-app.onrender.com',
         description: 'Production server (Render)'
       }
     ],
