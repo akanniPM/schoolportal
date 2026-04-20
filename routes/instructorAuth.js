@@ -39,7 +39,18 @@ const jwt = require('jsonwebtoken');
  *                 token:
  *                   type: string
  *                 instructor:
- *                   $ref: '#/components/schemas/Instructor'
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     username:
+ *                       type: string
+ *                     instructorId:
+ *                       type: string
  *       400:
  *         description: Username and password are required
  *       401:

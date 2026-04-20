@@ -124,7 +124,34 @@ router.post("/login", loginStudent);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Student'
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 studentId:
+ *                   type: string
+ *                   example: STD123456
+ *                 level:
+ *                   type: integer
+ *                   example: 1
+ *                 balance:
+ *                   type: number
+ *                 registeredCourses:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 receipt:
+ *                   type: object
+ *                   properties:
+ *                     path:
+ *                       type: string
+ *                     status:
+ *                       type: string
+ *                       enum: [pending, approved, rejected]
  *       401:
  *         description: Unauthorized or invalid token
  *       404:
@@ -179,7 +206,20 @@ router.post("/:id/register-courses", registerCourses);
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Course'
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   title:
+ *                     type: string
+ *                   code:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   level:
+ *                     type: integer
+ *                   credits:
+ *                     type: number
  *       401:
  *         description: Unauthorized
  */

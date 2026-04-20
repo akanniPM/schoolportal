@@ -19,7 +19,20 @@ const { validateCourseInput } = require('../middleware/validateInput');
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Course'
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   title:
+ *                     type: string
+ *                   code:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   level:
+ *                     type: integer
+ *                   credits:
+ *                     type: number
  *       500:
  *         description: Server error
  */
@@ -57,7 +70,20 @@ router.get('/', async (req, res) => {
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Course'
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   title:
+ *                     type: string
+ *                   code:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   level:
+ *                     type: integer
+ *                   credits:
+ *                     type: number
  *       500:
  *         description: Server error
  */
@@ -83,14 +109,43 @@ router.get('/:level', async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CourseCreate'
+ *             type: object
+ *             required: [title, code, level]
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Introduction to Computer Science
+ *               code:
+ *                 type: string
+ *                 example: CS101
+ *               description:
+ *                 type: string
+ *               level:
+ *                 type: integer
+ *                 example: 1
+ *               credits:
+ *                 type: number
+ *                 example: 3
  *     responses:
  *       201:
  *         description: Course created successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Course'
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 title:
+ *                   type: string
+ *                 code:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 level:
+ *                   type: integer
+ *                 credits:
+ *                   type: number
  *       400:
  *         description: Validation error or course code already exists
  *       500:
@@ -116,14 +171,43 @@ router.post('/', validateCourseInput, coursesController.createCourse);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CourseCreate'
+ *             type: object
+ *             required: [title, code, level]
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Introduction to Computer Science
+ *               code:
+ *                 type: string
+ *                 example: CS101
+ *               description:
+ *                 type: string
+ *               level:
+ *                 type: integer
+ *                 example: 1
+ *               credits:
+ *                 type: number
+ *                 example: 3
  *     responses:
  *       200:
  *         description: Course updated successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Course'
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 title:
+ *                   type: string
+ *                 code:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 level:
+ *                   type: integer
+ *                 credits:
+ *                   type: number
  *       500:
  *         description: Server error
  */

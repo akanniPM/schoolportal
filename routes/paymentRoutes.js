@@ -101,7 +101,22 @@ router.post("/verify-payment", verifyPayment);
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Payment'
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   student:
+ *                     type: string
+ *                   amount:
+ *                     type: number
+ *                   reference:
+ *                     type: string
+ *                   status:
+ *                     type: string
+ *                     enum: [pending, success, failed]
+ *                   paidAt:
+ *                     type: string
+ *                     format: date-time
  *       404:
  *         description: No payments found
  *       500:
