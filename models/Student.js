@@ -7,7 +7,6 @@ const studentSchema = new mongoose.Schema({
   password: { type: String, required: false },
   studentId: { type: String, required: true, unique: true },
   level: { type: Number, required: true },
-  courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }], // Track registered courses
   grades: [{ course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' }, grade: String }], // Track grades per course
   balance: { type: Number, default: 0 }, // Track student balance for payments
   registeredCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }], // Track registered courses

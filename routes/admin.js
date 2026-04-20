@@ -173,7 +173,6 @@ router.post('/generate-user', verifyToken, isAdmin, async (req, res) => {
         username,
         password: hashedPassword, // ✅ Store hashed
         level: 1,
-        courses: [],
       });
     } else if (role === 'instructor') {
       user = new Instructor({
@@ -203,37 +202,6 @@ router.post('/generate-user', verifyToken, isAdmin, async (req, res) => {
 });
 
 
-
-
-// router.post('/generate-user', async (req, res) => {
-//   try {
-//     const studentID = generateUsername('student');
-//     const rawPassword = generatePassword();
-
-//     // 🔐 Hash the password
-//     const hashedPassword = await bcrypt.hash(rawPassword, 10);
-
-//     const newStudent = new Student({
-//       name: req.body.name,
-//       email: req.body.email,
-//       studentId: studentID,
-//       username: studentID,
-//       password: hashedPassword,
-//       // level: req.body.level,
-//     });
-
-//     await newStudent.save();
-
-//     res.status(201).json({
-//       message: 'Student created',
-//       studentID,
-//       rawPassword // ⚠️ Only send this once — never store it in plain text
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: 'Server error' });
-//   }
-// });
 
 
 

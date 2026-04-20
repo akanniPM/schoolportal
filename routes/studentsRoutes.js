@@ -16,6 +16,55 @@ const {
 } = require("../controllers/studentController");
 const { verifyPayment } = require("../controllers/paymentController");
 
+/**
+ * @swagger
+ * /api/students/register:
+ *   post:
+ *     summary: Register a new student
+ *     tags: [Students]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, email, password, level]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Jane Doe
+ *               email:
+ *                 type: string
+ *                 example: jane@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: Secret123
+ *               level:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Registration successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Registration successful
+ *                 studentId:
+ *                   type: string
+ *                   example: STD123456
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       400:
+ *         description: Email already registered or validation failed
+ *       500:
+ *         description: Server error
+ */
 router.post("/register", validateStudentSignup, registerStudent);
 
 /**
@@ -30,11 +79,11 @@ router.post("/register", validateStudentSignup, registerStudent);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [email, password]
+ *             required: [studentId, password]
  *             properties:
- *               email:
+ *               studentId:
  *                 type: string
- *                 example: jane@gmail.com
+ *                 example: STD123456
  *               password:
  *                 type: string
  *                 example: Secret123
@@ -48,14 +97,16 @@ router.post("/register", validateStudentSignup, registerStudent);
  *               properties:
  *                 message:
  *                   type: string
+ *                   example: Login successful
  *                 token:
  *                   type: string
- *                 student:
- *                   $ref: '#/components/schemas/Student'
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       401:
+ *         description: Invalid credentials
  *       404:
  *         description: Student not found
- *       400:
- *         description: Invalid credentials
+ *       500:
+ *         description: Server error
  */
 router.post("/login", loginStudent);
 
@@ -174,6 +225,45 @@ if (config.cloudinary && config.cloudinary.name) {
   });
 }
 
+/**
+ * @swagger
+ * /api/students/upload-receipt:
+ *   post:
+ *     summary: Upload a payment receipt
+ *     tags: [Students]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [studentId, receipt]
+ *             properties:
+ *               studentId:
+ *                 type: string
+ *                 example: STD123456
+ *               receipt:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Receipt uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 path:
+ *                   type: string
+ *       400:
+ *         description: Missing student ID or file
+ *       404:
+ *         description: Student not found
+ *       500:
+ *         description: Server error
+ */
 router.post('/upload-receipt', upload.single('receipt'), async (req, res) => {
   try {
     const { studentId } = req.body;

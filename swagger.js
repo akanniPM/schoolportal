@@ -43,7 +43,7 @@ const options = {
             _id: { type: 'string', example: '507f1f77bcf86cd799439011' },
             name: { type: 'string', example: 'Jane Doe' },
             email: { type: 'string', format: 'email', example: 'jane@gmail.com' },
-            studentId: { type: 'string', example: 'STD2025001' },
+            studentId: { type: 'string', example: 'STD123456' },
             level: { type: 'integer', minimum: 1, maximum: 4, example: 1 },
             balance: { type: 'number', example: 50000 },
             registeredCourses: {
@@ -56,8 +56,7 @@ const options = {
                 type: 'object',
                 properties: {
                   course: { type: 'string' },
-                  grade: { type: 'string', example: 'A' },
-                  score: { type: 'number', example: 85 }
+                  grade: { type: 'string', example: 'A' }
                 }
               }
             },
@@ -68,8 +67,7 @@ const options = {
                 uploadedAt: { type: 'string', format: 'date-time' },
                 status: { type: 'string', enum: ['pending', 'approved', 'rejected'] }
               }
-            },
-            createdAt: { type: 'string', format: 'date-time' }
+            }
           }
         },
         StudentRegistration: {
@@ -84,9 +82,9 @@ const options = {
         },
         StudentLogin: {
           type: 'object',
-          required: ['email', 'password'],
+          required: ['studentId', 'password'],
           properties: {
-            email: { type: 'string', format: 'email', example: 'jane@gmail.com' },
+            studentId: { type: 'string', example: 'STD123456' },
             password: { type: 'string', format: 'password', example: 'Secret123' }
           }
         },
@@ -154,12 +152,12 @@ const options = {
             _id: { type: 'string', example: '507f1f77bcf86cd799439015' },
             name: { type: 'string', example: 'Dr. John Smith' },
             email: { type: 'string', format: 'email', example: 'john.smith@school.edu' },
-            department: { type: 'string', example: 'Computer Science' },
-            courses: {
+            instructorId: { type: 'string', example: 'INS001' },
+            username: { type: 'string', example: 'inst_john' },
+            assignedCourses: {
               type: 'array',
               items: { type: 'string' }
-            },
-            createdAt: { type: 'string', format: 'date-time' }
+            }
           }
         },
 
@@ -167,8 +165,8 @@ const options = {
         AuthResponse: {
           type: 'object',
           properties: {
-            token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
-            student: { $ref: '#/components/schemas/Student' }
+            message: { type: 'string', example: 'Login successful' },
+            token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }
           }
         },
         Error: {

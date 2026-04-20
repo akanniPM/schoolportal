@@ -5,6 +5,48 @@ const Instructor = require('../models/Instructor');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+/**
+ * @swagger
+ * /api/instructor-auth/login:
+ *   post:
+ *     summary: Login as an instructor
+ *     tags: [Instructors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, password]
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: inst_john
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: Secret123
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *                 instructor:
+ *                   $ref: '#/components/schemas/Instructor'
+ *       400:
+ *         description: Username and password are required
+ *       401:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;

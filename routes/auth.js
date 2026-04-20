@@ -7,10 +7,7 @@ const Admin = require("../models/Admin");
 const jwt = require("jsonwebtoken");
 const Instructor = require("../models/Instructor");
 const {authMiddleware} = require("../middleware/authMiddleware");
-
-function generateStudentId() {
-  return "STD" + Math.floor(100000 + Math.random() * 900000);
-}
+const { generateStudentId } = require("../utils/generateStudentId");
 
 router.get("/student/me", authMiddleware, async (req, res) => {
   try {
@@ -24,14 +21,14 @@ router.get("/student/me", authMiddleware, async (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, level } = req.body;
 
   try {
     const existing = await Student.findOne({ email });
     if (existing)
       return res.status(400).json({ message: "Email already exists" });
 
-    const studentId = generateStudentId();
+    const studentId = await generateStudentId();
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const student = await Student.create({
@@ -39,6 +36,7 @@ router.post("/signup", async (req, res) => {
       email,
       password: hashedPassword,
       studentId,
+      level: level || 1,
     });
 
     // Send Email with student ID
@@ -61,12 +59,13 @@ router.post("/signup", async (req, res) => {
 
     try {
       await transporter.sendMail(mailOptions);
-      console.log("Email sent successfully");
+      ;
     } catch (error) {
       console.error("Error sending email:", error);
+      await Student.findByIdAndDelete(student._id);
       return res
         .status(500)
-        .json({ message: "Error sending email", error: error.message });
+        .json({ message: "Error sending email. Registration rolled back.", error: error.message });
     }
 
     res
@@ -86,7 +85,11 @@ router.post("/admin/login", async (req, res) => {
 
   try {
     const admin = await Admin.findOne({ email });
-    if (!admin || admin.password !== password) {
+    if (!admin) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    const isMatch = await admin.comparePassword(password);
+    if (!isMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
@@ -102,44 +105,22 @@ router.post("/admin/login", async (req, res) => {
   }
 });
 
-// router.post('/login', async (req, res) => {
-//   const { studentId, password } = req.body;
-
-//   try {
-//     const student = await Student.findOne({ studentId });
-//     if (!student) return res.status(404).json({ message: 'Student not found' });
-
-//     // Compare the given password with the stored hashed password
-//     const isMatch = await bcrypt.compare(password, student.password);
-//     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
-
-//     // Send success response with student data (excluding password)
-//     res.status(200).json({
-//       message: 'Login successful',
-//       student: {
-//         id: student._id,
-//         name: student.name,
-//         email: student.email,
-//         studentId: student.studentId
-//       }
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Login failed', error: err.message });
-//   }
-// });
-
-// routes/auth.js
 router.post("/student/login", async (req, res) => {
-  const { studentId, password } = req.body;
-  const student = await Student.findOne({ studentId });
+  try {
+    const { studentId, password } = req.body;
+    const student = await Student.findOne({ studentId });
 
-  if (!student) return res.status(404).json({ error: "Student not found" });
+    if (!student) return res.status(404).json({ error: "Student not found" });
 
-  const isMatch = await bcrypt.compare(password, student.password);
-  if (!isMatch) return res.status(401).json({ error: "Invalid password" });
+    const isMatch = await bcrypt.compare(password, student.password);
+    if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
 
-  return res.status(200).json({ message: "Login successful", student });
+    const { password: _pw, ...studentData } = student.toObject();
+    return res.status(200).json({ message: "Login successful", student: studentData });
+  } catch (err) {
+    console.error("Student login error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 router.post("/instructor-login", async (req, res) => {
@@ -148,7 +129,11 @@ router.post("/instructor-login", async (req, res) => {
   try {
     const instructor = await Instructor.findOne({ username });
 
-    if (!instructor || instructor.password !== password) {
+    if (!instructor) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+    const isMatch = await bcrypt.compare(password, instructor.password);
+    if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
@@ -158,7 +143,8 @@ router.post("/instructor-login", async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    res.json({ token, instructor });
+    const { password: _pw, ...instructorData } = instructor.toObject();
+    res.json({ token, instructor: instructorData });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ message: "Server error" });

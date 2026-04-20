@@ -5,7 +5,24 @@ const Course = require('../models/Course');
 const coursesController = require('../controllers/courseController');
 const { validateCourseInput } = require('../middleware/validateInput');
 
-// Get all courses
+/**
+ * @swagger
+ * /api/courses:
+ *   get:
+ *     summary: Get all courses
+ *     tags: [Courses]
+ *     responses:
+ *       200:
+ *         description: List of all courses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Course'
+ *       500:
+ *         description: Server error
+ */
 router.get('/', async (req, res) => {
   
   try {
@@ -17,7 +34,33 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ GET courses by level (e.g., /api/courses/1)
+/**
+ * @swagger
+ * /api/courses/{level}:
+ *   get:
+ *     summary: Get courses by level
+ *     tags: [Courses]
+ *     parameters:
+ *       - in: path
+ *         name: level
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 4
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Courses for the specified level
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Course'
+ *       500:
+ *         description: Server error
+ */
 router.get('/:level', async (req, res) => {
   try {
     const level = parseInt(req.params.level, 10);
@@ -29,11 +72,61 @@ router.get('/:level', async (req, res) => {
   }
 });
 
-// Create new course (with validation)
+/**
+ * @swagger
+ * /api/courses:
+ *   post:
+ *     summary: Create a new course
+ *     tags: [Courses]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CourseCreate'
+ *     responses:
+ *       201:
+ *         description: Course created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Course'
+ *       400:
+ *         description: Validation error or course code already exists
+ *       500:
+ *         description: Server error
+ */
 router.post('/', validateCourseInput, coursesController.createCourse);
 
 
-// Update course
+/**
+ * @swagger
+ * /api/courses/{id}:
+ *   put:
+ *     summary: Update a course
+ *     tags: [Courses]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CourseCreate'
+ *     responses:
+ *       200:
+ *         description: Course updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Course'
+ *       500:
+ *         description: Server error
+ */
 router.put('/:id', validateCourseInput, async (req, res) => {
   try {
     const { title, description, level } = req.body;
@@ -44,7 +137,24 @@ router.put('/:id', validateCourseInput, async (req, res) => {
   }
 });
 
-// Delete course
+/**
+ * @swagger
+ * /api/courses/{id}:
+ *   delete:
+ *     summary: Delete a course
+ *     tags: [Courses]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Course deleted successfully
+ *       500:
+ *         description: Server error
+ */
 router.delete('/:id', async (req, res) => {
   try {
     await Course.findByIdAndDelete(req.params.id);
